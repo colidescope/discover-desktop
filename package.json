@@ -1,7 +1,7 @@
 {
   "name": "discover-desktop",
-  "productName": "discover-desktop",
-  "version": "0.0.3",
+  "productName": "Discover",
+  "version": "0.0.4",
   "description": "Discover: Optimization for Grasshopper",
   "main": ".vite/build/main.js",
   "repository": {
@@ -40,8 +40,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "Danil Nagy",
-    "email": "4085524+danilnagy@users.noreply.github.com"
+    "name": "Colidescope",
+    "email": "support@colidescope.com"
   },
   "license": "MIT",
   "dependencies": {
