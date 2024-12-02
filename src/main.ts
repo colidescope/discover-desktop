@@ -1,5 +1,7 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
+import fs from "fs";
+import os from "os";
 import started from "electron-squirrel-startup";
 import { updateElectronApp } from "update-electron-app";
 
@@ -55,3 +57,20 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+ipcMain.on("write-to-desktop", (event, fileContent) => {
+  const desktopPath = path.join(os.homedir(), "OneDrive\\Desktop");
+  const filePath = path.join(desktopPath, "output.txt");
+
+  console.log(filePath);
+
+  fs.writeFile(filePath, fileContent, (err) => {
+    if (err) {
+      console.error("Error writing file:", err);
+      event.reply("write-to-desktop-reply", "Failed to write file.");
+    } else {
+      console.log("File written successfully:", filePath);
+      event.reply("write-to-desktop-reply", "File written successfully!");
+    }
+  });
+});
