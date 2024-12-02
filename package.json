@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colidescope/discover-desktop"
+  },
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -40,6 +44,7 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "^1.0.1",
+    "update-electron-app": "^3.0.0"
   }
 }
