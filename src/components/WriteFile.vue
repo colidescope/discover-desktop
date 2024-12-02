@@ -1,7 +1,7 @@
 <!-- HelloWorld.vue -->
 <template>
   <div>
-    <button @click="writeToDesktop">Write File to Desktop</button>
+    <button @click="writeToDesktop">Write File</button>
   </div>
 </template>
 
@@ -9,9 +9,12 @@
 export default {
   methods: {
     writeToDesktop() {
-      window.electronAPI.writeToDesktop(
-        "This is the content of the text file!"
-      );
+      // Get the current timestamp
+      const timestamp = new Date().toISOString(); // Format as ISO 8601 string
+      const fileContent = `${timestamp}`;
+
+      // Send the content to Electron API
+      window.electronAPI.writeToDesktop(fileContent);
     },
   },
 };

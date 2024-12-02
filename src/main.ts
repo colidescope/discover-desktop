@@ -4,6 +4,8 @@ import fs from "fs";
 import os from "os";
 import started from "electron-squirrel-startup";
 import { updateElectronApp } from "update-electron-app";
+import express from "express"; // Import express
+import bodyParser from "body-parser"; // For parsing JSON payloads
 
 updateElectronApp({});
 
@@ -36,7 +38,10 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+app.on("ready", () => {
+  createWindow();
+  startApiServer(); // Start the API server when the app is ready
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -48,7 +53,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("activate", () => {
-  // On OS X it's common to re-create a window in the app when the
+  // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
@@ -74,3 +79,38 @@ ipcMain.on("write-to-desktop", (event, fileContent) => {
     }
   });
 });
+
+// Function to start the Express API server
+const startApiServer = () => {
+  const apiServer = express();
+  const PORT = 3000; // Port for the API server
+
+  // Middleware to parse JSON payloads
+  apiServer.use(bodyParser.json());
+
+  // Define API routes
+  apiServer.get("/api/status", (req, res) => {
+    res.json({ status: "Electron app is running" });
+  });
+
+  apiServer.post("/api/write-file", (req, res) => {
+    const { fileName, content } = req.body;
+    const desktopPath = path.join(os.homedir(), "OneDrive\\Desktop");
+    const filePath = path.join(desktopPath, fileName || "output.txt");
+
+    fs.writeFile(filePath, content || "", (err) => {
+      if (err) {
+        console.error("Error writing file:", err);
+        res.status(500).send("Failed to write file");
+      } else {
+        console.log("File written successfully:", filePath);
+        res.send("File written successfully");
+      }
+    });
+  });
+
+  // Start the server
+  apiServer.listen(PORT, "127.0.0.1", () => {
+    console.log(`API server is running at http://127.0.0.1:${PORT}`);
+  });
+};
