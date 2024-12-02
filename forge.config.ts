@@ -16,7 +16,8 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({
       // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
-      iconUrl: "https://url/to/icon.ico",
+      iconUrl:
+        "https://raw.githubusercontent.com/colidescope/discover-desktop/refs/heads/master/images/icon.ico",
       // The ICO file to use as the icon for the generated Setup.exe
       setupIcon: "./images/icon",
     }),
