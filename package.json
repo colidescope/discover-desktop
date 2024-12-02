@@ -1,8 +1,8 @@
 {
   "name": "discover-desktop",
   "productName": "discover-desktop",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "0.0.1",
+  "description": "Discover: Optimization for Grasshopper",
   "main": ".vite/build/main.js",
   "repository": {
     "type": "git",
