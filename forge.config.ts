@@ -10,10 +10,16 @@ import { FuseV1Options, FuseVersion } from "@electron/fuses";
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: "./images/icon", // no file extension required
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      // An URL to an ICO file to use as the application icon (displayed in Control Panel > Programs and Features).
+      iconUrl: "https://url/to/icon.ico",
+      // The ICO file to use as the icon for the generated Setup.exe
+      setupIcon: "./images/icon",
+    }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
     new MakerDeb({}),
