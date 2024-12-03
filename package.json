@@ -1,7 +1,7 @@
 {
   "name": "discover-desktop",
   "productName": "Discover",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Discover: Optimization for Grasshopper",
   "main": ".vite/build/main.js",
   "repository": {
