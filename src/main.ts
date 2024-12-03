@@ -20,13 +20,22 @@ if (started) {
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    // width: 800,
+    // height: 600,
+    // fullscreen: true, // Open in full-screen mode by default
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
     icon: "./images/icon.ico",
   });
+
+  // Maximize the window after creation
+  mainWindow.maximize();
+
+  // Open DevTools if in a development environment
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools();
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -77,6 +86,28 @@ const startApiServer = () => {
   });
 
   // Define POST endpoint to receive and forward the message
+  apiServer.post("/api/connect", (req, res) => {
+    const { ts, path } = req.body;
+
+    if (!path) {
+      return res.status(400).send("Message is required");
+    }
+
+    const formattedMessage = `${formatTime(ts)}: ${path}`;
+    console.log(formattedMessage);
+
+    // Send the message to the renderer process
+    if (mainWindow) {
+      mainWindow.webContents.send("connect", path);
+    } else {
+      console.error("Main window is not available");
+      return res.status(500).send("Main window is not available");
+    }
+
+    res.send("Message received and sent to the renderer");
+  });
+
+  // Define POST endpoint to receive and forward the message
   apiServer.post("/api/message", (req, res) => {
     const { ts, message } = req.body;
 
@@ -97,22 +128,6 @@ const startApiServer = () => {
     res.send("Message received and sent to the renderer");
   });
 
-  apiServer.post("/api/write-file", (req, res) => {
-    const { fileName, content } = req.body;
-    const desktopPath = path.join(os.homedir(), "OneDrive\\Desktop");
-    const filePath = path.join(desktopPath, fileName || "output.txt");
-
-    fs.writeFile(filePath, content || "", (err) => {
-      if (err) {
-        console.error("Error writing file:", err);
-        res.status(500).send("Failed to write file");
-      } else {
-        console.log("File written successfully:", filePath);
-        res.send("File written successfully");
-      }
-    });
-  });
-
   // Start the server
   apiServer.listen(PORT, "127.0.0.1", () => {
     console.log(`API server is running at http://127.0.0.1:${PORT}`);
@@ -120,13 +135,12 @@ const startApiServer = () => {
 };
 
 // Handle IPC to write to the desktop
-ipcMain.on("write-to-desktop", (event, fileContent) => {
-  const desktopPath = path.join(os.homedir(), "OneDrive\\Desktop");
-  const filePath = path.join(desktopPath, "output.txt");
+ipcMain.on("write-to-desktop", (event, { localPath, content }) => {
+  const filePath = path.join(localPath, "discover.txt");
 
   console.log(filePath);
 
-  fs.writeFile(filePath, fileContent, (err) => {
+  fs.writeFile(filePath, content, (err) => {
     if (err) {
       console.error("Error writing file:", err);
       event.reply("write-to-desktop-reply", "Failed to write file.");

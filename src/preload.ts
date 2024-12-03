@@ -4,9 +4,12 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
-  writeToDesktop: (content: string) =>
-    ipcRenderer.send("write-to-desktop", content),
+  writeToDesktop: (localPath: string, content: string) =>
+    ipcRenderer.send("write-to-desktop", { localPath, content }),
   onDisplayMessage: (callback: (event: any, message: string) => void) => {
     ipcRenderer.on("display-message", callback);
+  },
+  onConnect: (callback: (event: any, message: string) => void) => {
+    ipcRenderer.on("connect", callback);
   },
 });

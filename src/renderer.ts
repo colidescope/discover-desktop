@@ -27,9 +27,14 @@
  */
 
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import App from "./App.vue";
 
 // Import the global CSS file
 import "./styles/global.css";
 
-createApp(App).mount("#app");
+const app = createApp(App);
+const pinia = createPinia();
+
+app.use(pinia); // Register Pinia
+app.mount("#app");
