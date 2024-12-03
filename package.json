@@ -1,7 +1,7 @@
 {
   "name": "discover-desktop",
   "productName": "Discover",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Discover: Optimization for Grasshopper",
   "main": ".vite/build/main.js",
   "repository": {
@@ -27,6 +27,7 @@
     "@electron-forge/publisher-github": "^7.6.0",
     "@electron/fuses": "^1.8.0",
     "@types/electron-squirrel-startup": "^1.0.2",
+    "@types/express": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
@@ -47,6 +48,8 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "electron-squirrel-startup": "^1.0.1",
+    "express": "^4.21.1",
+    "pinia": "^2.2.8",
     "update-electron-app": "^3.0.0",
     "vue": "^3.5.13"
   }
