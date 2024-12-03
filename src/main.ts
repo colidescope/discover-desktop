@@ -6,6 +6,7 @@ import started from "electron-squirrel-startup";
 import { updateElectronApp } from "update-electron-app";
 import express from "express"; // Import express
 import bodyParser from "body-parser"; // For parsing JSON payloads
+import { formatTime } from "./utils";
 
 updateElectronApp({});
 
@@ -78,13 +79,12 @@ const startApiServer = () => {
   // Define POST endpoint to receive and forward the message
   apiServer.post("/api/message", (req, res) => {
     const { ts, message } = req.body;
+
     if (!message) {
       return res.status(400).send("Message is required");
     }
 
-    const formattedMessage = `${ts}: ${message}`;
-
-    console.log(formattedMessage);
+    const formattedMessage = `${formatTime(ts)} --> ${message}`;
 
     // Send the message to the renderer process
     if (mainWindow) {

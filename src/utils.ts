@@ -1,6 +1,6 @@
 // Utility function to validate if a string is an ISO 8601 timestamp
 export function isISO8601(timestamp: string): boolean {
-  const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+  const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3,6}Z$/;
   return iso8601Regex.test(timestamp);
 }
 
@@ -32,6 +32,7 @@ export function formatTime(timestamp: string): string {
     return nycDate.toLocaleString("en-US", options);
   } else {
     // If not a valid timestamp, return the original input
+    console.warn("Not valid timestamp");
     return timestamp;
   }
 }

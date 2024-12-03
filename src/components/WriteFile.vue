@@ -32,8 +32,7 @@ export default {
     // Listen for the 'display-message' event from the main process
     window.electronAPI.onDisplayMessage((event, message) => {
       const timestamp = new Date().toISOString(); // Format as ISO 8601 string
-      const formattedMessage = `${formatTime(timestamp)}: ${message}`;
-      console.log(formattedMessage);
+      const formattedMessage = `${formatTime(timestamp)} --> ${message}`;
       this.message = formattedMessage;
     });
   },
