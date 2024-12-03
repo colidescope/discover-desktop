@@ -6,11 +6,13 @@ import started from "electron-squirrel-startup";
 import { updateElectronApp } from "update-electron-app";
 import express from "express"; // Import express
 import bodyParser from "body-parser"; // For parsing JSON payloads
-import { formatTime } from "./utils";
+import { formatTime, splitPath } from "./utils";
 
 updateElectronApp({});
 
 let mainWindow: BrowserWindow | null = null; // Declare mainWindow globally
+
+const exchangeFileName = "discover.txt";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -87,24 +89,26 @@ const startApiServer = () => {
 
   // Define POST endpoint to receive and forward the message
   apiServer.post("/api/connect", (req, res) => {
-    const { ts, path } = req.body;
+    const { ts, localPath } = req.body;
 
-    if (!path) {
+    if (!localPath) {
       return res.status(400).send("Message is required");
     }
 
-    const formattedMessage = `${formatTime(ts)}: ${path}`;
+    const formattedMessage = `${formatTime(ts)}: ${localPath}`;
     console.log(formattedMessage);
 
     // Send the message to the renderer process
     if (mainWindow) {
-      mainWindow.webContents.send("connect", path);
+      mainWindow.webContents.send("connect", localPath);
     } else {
       console.error("Main window is not available");
       return res.status(500).send("Main window is not available");
     }
 
-    res.send("Message received and sent to the renderer");
+    const { directory, fileName } = splitPath(localPath);
+
+    res.send({ exchangeFilePath: path.join(directory, exchangeFileName) });
   });
 
   // Define POST endpoint to receive and forward the message
@@ -136,7 +140,7 @@ const startApiServer = () => {
 
 // Handle IPC to write to the desktop
 ipcMain.on("write-to-desktop", (event, { localPath, content }) => {
-  const filePath = path.join(localPath, "discover.txt");
+  const filePath = path.join(localPath, exchangeFileName);
 
   console.log(filePath);
 

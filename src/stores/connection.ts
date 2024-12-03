@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { splitPath } from "../utils";
 
 export const useConnectionStore = defineStore("connection", {
   state: () => {
@@ -6,11 +7,9 @@ export const useConnectionStore = defineStore("connection", {
   },
   actions: {
     setLocalPath(newPath: string) {
-      const lastSlashIndex = newPath.lastIndexOf("\\");
-      this.localPath =
-        lastSlashIndex !== -1 ? newPath.slice(0, lastSlashIndex) : ""; // Directory path
-      this.fileName =
-        lastSlashIndex !== -1 ? newPath.slice(lastSlashIndex + 1) : newPath; // File name
+      const { directory, fileName } = splitPath(newPath);
+      this.localPath = directory;
+      this.fileName = fileName;
       console.log(this.localPath, this.fileName);
     },
   },

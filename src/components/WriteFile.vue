@@ -1,7 +1,7 @@
 <template>
   <div v-if="connection.localPath">
     <div v-if="connection.fileName" class="message-display">
-      {{ `Connected to file: ${connection.fileName}` }}
+      {{ `Connected to: ${connection.fileName}` }}
     </div>
     <button @click="writeToDesktop">Write File</button>
   </div>

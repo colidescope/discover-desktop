@@ -36,3 +36,14 @@ export function formatTime(timestamp: string): string {
     return timestamp;
   }
 }
+
+export function splitPath(path: string): {
+  directory: string;
+  fileName: string;
+} {
+  const lastSlashIndex = path.lastIndexOf("\\");
+  const directory = lastSlashIndex !== -1 ? path.slice(0, lastSlashIndex) : ""; // Directory path
+  const fileName =
+    lastSlashIndex !== -1 ? path.slice(lastSlashIndex + 1) : path; // File name
+  return { directory, fileName };
+}
