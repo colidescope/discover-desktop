@@ -9,6 +9,8 @@ import bodyParser from "body-parser"; // For parsing JSON payloads
 
 updateElectronApp({});
 
+let mainWindow: BrowserWindow | null = null; // Declare mainWindow globally
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
   app.quit();
@@ -16,7 +18,7 @@ if (started) {
 
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -60,26 +62,6 @@ app.on("activate", () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-
-ipcMain.on("write-to-desktop", (event, fileContent) => {
-  const desktopPath = path.join(os.homedir(), "OneDrive\\Desktop");
-  const filePath = path.join(desktopPath, "output.txt");
-
-  console.log(filePath);
-
-  fs.writeFile(filePath, fileContent, (err) => {
-    if (err) {
-      console.error("Error writing file:", err);
-      event.reply("write-to-desktop-reply", "Failed to write file.");
-    } else {
-      console.log("File written successfully:", filePath);
-      event.reply("write-to-desktop-reply", "File written successfully!");
-    }
-  });
-});
-
 // Function to start the Express API server
 const startApiServer = () => {
   const apiServer = express();
@@ -91,6 +73,28 @@ const startApiServer = () => {
   // Define API routes
   apiServer.get("/api/status", (req, res) => {
     res.json({ status: "Electron app is running" });
+  });
+
+  // Define POST endpoint to receive and forward the message
+  apiServer.post("/api/message", (req, res) => {
+    const { ts, message } = req.body;
+    if (!message) {
+      return res.status(400).send("Message is required");
+    }
+
+    const formattedMessage = `${ts}: ${message}`;
+
+    console.log(formattedMessage);
+
+    // Send the message to the renderer process
+    if (mainWindow) {
+      mainWindow.webContents.send("display-message", formattedMessage);
+    } else {
+      console.error("Main window is not available");
+      return res.status(500).send("Main window is not available");
+    }
+
+    res.send("Message received and sent to the renderer");
   });
 
   apiServer.post("/api/write-file", (req, res) => {
@@ -114,3 +118,21 @@ const startApiServer = () => {
     console.log(`API server is running at http://127.0.0.1:${PORT}`);
   });
 };
+
+// Handle IPC to write to the desktop
+ipcMain.on("write-to-desktop", (event, fileContent) => {
+  const desktopPath = path.join(os.homedir(), "OneDrive\\Desktop");
+  const filePath = path.join(desktopPath, "output.txt");
+
+  console.log(filePath);
+
+  fs.writeFile(filePath, fileContent, (err) => {
+    if (err) {
+      console.error("Error writing file:", err);
+      event.reply("write-to-desktop-reply", "Failed to write file.");
+    } else {
+      console.log("File written successfully:", filePath);
+      event.reply("write-to-desktop-reply", "File written successfully!");
+    }
+  });
+});
